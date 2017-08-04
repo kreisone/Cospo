@@ -5,6 +5,7 @@ import android.os.Environment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 import android.view.Menu;
 import android.view.View;
 import android.widget.HorizontalScrollView;
@@ -23,6 +24,9 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Connection;
 
 import java.sql.DriverManager;
@@ -47,45 +51,105 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private static Connection getDBConnection() {
-        Connection dbConnection = null;
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            Log.d(TAG, "Training plan: " + e.getMessage());
-        }
-        try {
-            dbConnection = DriverManager.getConnection("jdbc:mysql://mysql.hostinger.com.ua/u548386781_cospo","u548386781_sem", "WXmXOcwe400H");
-            return dbConnection;
-        } catch (SQLException e) {
-            Log.d(TAG, "Training plan1: " + e.getMessage());
-        }
-        return dbConnection;
-    }
+//    private static Connection getDBConnection() {
+//        Connection dbConnection = null;
+//        try {
+//            Class.forName("com.mysql.jdbc.Driver");
+//        } catch (ClassNotFoundException e) {
+//            Log.d(TAG, "Training plan: " + e.getMessage());
+//        }
+//        try {
+//            dbConnection = DriverManager.getConnection("jdbc:mysql://mysql.hostinger.com.ua:3306/u548386781_cospo","u548386781_sem", "WXmXOcwe400H");
+//            return dbConnection;
+//        } catch (SQLException e) {
+//            Log.d(TAG, "Training plan1: " + e.getMessage());
+//        }
+//        return dbConnection;
+//    }
 
     public void showTrainingPlan (View view) {
 
-        String selectTableSQL = "SELECT plan FROM cosposk_training_plan";
-        Connection dbConnection = null;
-        Statement statement = null;
+        String query = "http://4pda.ru";
 
+        HttpURLConnection connection = null;
         try {
-            dbConnection = getDBConnection();
-            statement = dbConnection.createStatement();
+            connection = (HttpURLConnection) new URL(query).openConnection();
 
-            // выбираем данные с БД
-            ResultSet rs = statement.executeQuery(selectTableSQL);
+            connection.setRequestMethod("GET");
+            connection.setUseCaches(false);
+            connection.setConnectTimeout(250);
+            connection.setReadTimeout(250);
 
-            // И если что то было получено то цикл while сработает
-            while (rs.next()) {
-                String plan = rs.getString("plan");
+            connection.connect();
 
-                System.out.println("plan : " + plan);
-                Log.d(TAG, "Plan: " + plan);
+
+
+
+            if (HttpURLConnection.HTTP_OK == connection.getResponseCode()) {
+
+                TableLayout table = new TableLayout(this);
+
+                TableRow tableRow = new TableRow(this);
+                TextView text = new TextView(this);
+                text.setText((CharSequence) connection.getInputStream());
+
+                tableRow.addView(text);
+
+                setContentView(table);
+
+            } else {
+                Log.d(TAG, "training_plan: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
             }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+
+        } catch (Throwable cause) {
+            cause.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//        String selectTableSQL = "SELECT plan FROM cosposk_training_plan";
+//        Connection dbConnection = null;
+//        Statement statement = null;
+//
+//        try {
+//            dbConnection = getDBConnection();
+//            statement = dbConnection.createStatement();
+//
+//            // выбираем данные с БД
+//            ResultSet rs = statement.executeQuery(selectTableSQL);
+//
+//            // И если что то было получено то цикл while сработает
+//            while (rs.next()) {
+//                String plan = rs.getString("plan");
+//
+//                System.out.println("plan : " + plan);
+//                Log.d(TAG, "Plan: " + plan);
+//            }
+//        } catch (SQLException e) {
+//            System.out.println(e.getMessage());
+//        }
 
 
 

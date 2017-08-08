@@ -1,6 +1,7 @@
 package com.example.aviro.cospo;
 
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -38,7 +39,7 @@ import java.util.Iterator;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "test11";
-
+    private static final String MESSAGE = "message";
 
 
 
@@ -48,113 +49,72 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
     }
 
-//    private static Connection getDBConnection() {
-//        Connection dbConnection = null;
-//        try {
-//            Class.forName("com.mysql.jdbc.Driver");
-//        } catch (ClassNotFoundException e) {
-//            Log.d(TAG, "Training plan: " + e.getMessage());
-//        }
-//        try {
-//            dbConnection = DriverManager.getConnection("jdbc:mysql://mysql.hostinger.com.ua:3306/u548386781_cospo","u548386781_sem", "WXmXOcwe400H");
-//            return dbConnection;
-//        } catch (SQLException e) {
-//            Log.d(TAG, "Training plan1: " + e.getMessage());
-//        }
-//        return dbConnection;
-//    }
 
-    public void showTrainingPlan (View view) {
 
-        String query = "http://4pda.ru";
+    public int showTrainingPlan (View view) {
 
-        HttpURLConnection connection = null;
+        TrainingPlan training_plan = new TrainingPlan();
+
+
+        // Тренировочный план
+        training_plan.uploadPlan();
+
+
         try {
-            connection = (HttpURLConnection) new URL(query).openConnection();
-
-            connection.setRequestMethod("GET");
-            connection.setUseCaches(false);
-            connection.setConnectTimeout(250);
-            connection.setReadTimeout(250);
-
-            connection.connect();
-
-
-
-
-            if (HttpURLConnection.HTTP_OK == connection.getResponseCode()) {
-
-                TableLayout table = new TableLayout(this);
-
-                TableRow tableRow = new TableRow(this);
-                TextView text = new TextView(this);
-                text.setText((CharSequence) connection.getInputStream());
-
-                tableRow.addView(text);
-
-                setContentView(table);
-
-            } else {
-                Log.d(TAG, "training_plan: " + connection.getResponseCode() + ", " + connection.getResponseMessage());
-            }
-
-        } catch (Throwable cause) {
-            cause.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
+            Thread.sleep(8000);
+        } catch (InterruptedException e) {
+            Log.d(TAG, "sleep: " + e.getMessage());
         }
 
 
+        Log.d(TAG, "plan123 " + training_plan.data[1][2]);
+        Log.d(TAG, "length2 " + training_plan.data.length);
+//return 0;
+
+
+        try {
+            ScrollView scroll = new ScrollView(this);
+            HorizontalScrollView hscroll = new HorizontalScrollView(this);
+
+            TableLayout tableLayout = new TableLayout(this);
+
+            tableLayout.setStretchAllColumns(true);
+//            tableLayout.setShrinkAllColumns(true);
+
+
+            for (int i = 0; i < training_plan.data.length; i++) {
+
+                TableRow tableRow = new TableRow(this);
+
+                for (int j = 0; j < training_plan.data[i].length; j++) {
+
+                    TextView title = new TextView(this);
+                    title.setText(training_plan.data[i][j]);
+
+                    Log.d(TAG, "plan[]: " + training_plan.data[i][j]);
+
+
+                    tableRow.addView(title, j);
+                }
+
+
+                tableLayout.addView(tableRow);
+
+            }
+
+
+            hscroll.addView(tableLayout);
+            scroll.addView(hscroll);
+
+            setContentView(scroll);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//        String selectTableSQL = "SELECT plan FROM cosposk_training_plan";
-//        Connection dbConnection = null;
-//        Statement statement = null;
-//
-//        try {
-//            dbConnection = getDBConnection();
-//            statement = dbConnection.createStatement();
-//
-//            // выбираем данные с БД
-//            ResultSet rs = statement.executeQuery(selectTableSQL);
-//
-//            // И если что то было получено то цикл while сработает
-//            while (rs.next()) {
-//                String plan = rs.getString("plan");
-//
-//                System.out.println("plan : " + plan);
-//                Log.d(TAG, "Plan: " + plan);
-//            }
-//        } catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
-
-
-
-
-
+        } catch (Exception e) {
+            return Log.d(MESSAGE, e.getMessage());
+        }
 
 
 //        try {
@@ -212,5 +172,6 @@ public class MainActivity extends AppCompatActivity {
 //        catch (Exception ex) {
 //            return;
 //        }
+        return 0;
     }
 }

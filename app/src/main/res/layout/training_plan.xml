@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.aviro.cospo.MainActivity"
-    android:id="@+id/main_activity">
+    tools:context="com.example.aviro.cospo.MainActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -17,7 +16,15 @@
         android:paddingTop="@dimen/tool_bar_top_padding"
         android:transitionName="actionBar" />
 
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="showTrainingPlan"
+        android:text="Button"
+        tools:layout_editor_absoluteX="164dp"
+        tools:layout_editor_absoluteY="381dp"
+        />
 
 
 </RelativeLayout>
-

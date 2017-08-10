@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Cospo</string>
+    <string name="training_plan">Тренировочный план</string>
+    <string name="title_activity_training_plan1">TrainingPlan1</string>
 </resources>

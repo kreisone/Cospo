@@ -1,19 +1,33 @@
 package com.example.aviro.cospo;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.StringBuilderPrinter;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.mikepenz.iconics.typeface.FontAwesome;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.apache.poi.hssf.extractor.ExcelExtractor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -22,10 +36,15 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.w3c.dom.Text;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Connection;
@@ -36,7 +55,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends ActionBarActivity {
 
     private static final String TAG = "test11";
     private static final String MESSAGE = "message";
@@ -47,6 +67,36 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        final Intent intent = new Intent(this, TrainingPlan1.class);
+        new Drawer()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withActionBarDrawerToggle(true)
+                .withHeader(R.layout.drawer_header)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName(R.string.training_plan).withIcon(FontAwesome.Icon.faw_table).withIdentifier(1)
+
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+
+
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+
+
+                        showTrainingPlan(view);
+                        Log.d(TAG, "test22");
+                    }
+                })
+                .build();
+
+
+
 
 
     }
@@ -62,12 +112,6 @@ public class MainActivity extends AppCompatActivity {
         training_plan.uploadPlan();
 
 
-        try {
-            Thread.sleep(8000);
-        } catch (InterruptedException e) {
-            Log.d(TAG, "sleep: " + e.getMessage());
-        }
-
 
         Log.d(TAG, "plan123 " + training_plan.data[1][2]);
         Log.d(TAG, "length2 " + training_plan.data.length);
@@ -82,16 +126,20 @@ public class MainActivity extends AppCompatActivity {
 
             tableLayout.setStretchAllColumns(true);
 //            tableLayout.setShrinkAllColumns(true);
+            tableLayout.setPadding(0,160,0,0);
 
 
             for (int i = 0; i < training_plan.data.length; i++) {
 
                 TableRow tableRow = new TableRow(this);
+                tableRow.setBackgroundColor(Color.WHITE);
 
                 for (int j = 0; j < training_plan.data[i].length; j++) {
 
                     TextView title = new TextView(this);
                     title.setText(training_plan.data[i][j]);
+                    title.setTextColor(Color.BLACK);
+                    title.setPadding(5,5,5,5);
 
                     Log.d(TAG, "plan[]: " + training_plan.data[i][j]);
 
@@ -108,7 +156,40 @@ public class MainActivity extends AppCompatActivity {
             hscroll.addView(tableLayout);
             scroll.addView(hscroll);
 
-            setContentView(scroll);
+            RelativeLayout rl = (RelativeLayout) findViewById(R.id.main_activity);
+
+            RelativeLayout.LayoutParams param =  new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+
+            rl.addView(scroll);
+//            setContentView(R.layout.activity_main);
+
+//            container.addView(scroll);
+
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+            new Drawer()
+                    .withActivity(this)
+                    .withToolbar(toolbar)
+                    .withActionBarDrawerToggle(true)
+                    .withHeader(R.layout.drawer_header)
+                    .addDrawerItems(
+                            new PrimaryDrawerItem().withName(R.string.training_plan).withIcon(FontAwesome.Icon.faw_table).withIdentifier(1)
+
+                    )
+                    .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+
+
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
+                            showTrainingPlan(view);
+                            Log.d(TAG, "test22");
+                        }
+                    })
+                    .build();
 
 
 
@@ -116,62 +197,6 @@ public class MainActivity extends AppCompatActivity {
             return Log.d(MESSAGE, e.getMessage());
         }
 
-
-//        try {
-//
-//
-//
-//            InputStream in = new FileInputStream(Environment.getExternalStorageDirectory().getPath() + "/.Cospo/table.xls");
-//            // Внимание InputStream будет закрыт
-//            // Если нужно не закрывающий см. JavaDoc по POIFSFileSystem :  http://goo.gl/1Auu7
-//            HSSFWorkbook wb = new HSSFWorkbook(in);
-//
-//            Sheet sheet = wb.getSheetAt(0);
-//
-//            ScrollView scroll = new ScrollView(this);
-//            HorizontalScrollView hscroll = new HorizontalScrollView(this);
-//
-//
-//
-//            TableLayout table = new TableLayout(this);
-//
-//
-//            table.setStretchAllColumns(true);
-//            table.setShrinkAllColumns(true);
-//
-//
-//            Row row;
-//            for (int i = 1; i < sheet.getPhysicalNumberOfRows(); i++) {
-//
-//                TableRow tableRow = new TableRow(this);
-//                row = sheet.getRow(i);
-//
-//                Log.d(TAG, "showTrainingPlan: " + row.getPhysicalNumberOfCells());
-//
-//                Cell cell;
-//                for (int j = 0; j < 40; j++) {
-//                    cell = row.getCell(j);
-//
-//                    TextView title = new TextView(this);
-//                    title.setText(cell.getStringCellValue());
-//
-//                    tableRow.addView(title, j);
-//
-//                }
-//
-//                table.addView(tableRow);
-//
-//            }
-//
-//            hscroll.addView(table);
-//            scroll.addView(hscroll);
-//
-//            setContentView(scroll);
-//
-//        }
-//        catch (Exception ex) {
-//            return;
-//        }
         return 0;
     }
 }

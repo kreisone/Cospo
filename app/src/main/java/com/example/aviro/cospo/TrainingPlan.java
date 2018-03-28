@@ -1,19 +1,14 @@
 package com.example.aviro.cospo;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -31,23 +26,24 @@ public class TrainingPlan {
     private static final String TAG = "test12";
     private static final String FILE = "file";
     private static final String INET = "inet";
-    public static String[][] data = new String[50][200];
+    public static String[][] data;
+    public boolean stream_completed = false;
 
 
 
 
-
-
-    public static void uploadPlan() {
+    public void uploadPlan() {
 
         new MyTask().execute();
 
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Log.d(TAG, "sleep: " + e.getMessage());
-        }
 
+        while (!stream_completed) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Log.d(TAG, "sleep: " + e.getMessage());
+            }
+        }
 
 
     }
@@ -55,7 +51,7 @@ public class TrainingPlan {
 
 
 
-    public static class MyTask extends AsyncTask<Object, Object, Void> {
+    public class MyTask extends AsyncTask<Object, Object, Void> {
 
         String resultJson = "";
 
@@ -119,7 +115,10 @@ public class TrainingPlan {
 
 
                                 dataJsonObj = new JSONObject(resultJson);
-//                            String[][] data = new String[dataJsonObj.length()][200];
+
+
+                                JSONObject countCol = dataJsonObj.getJSONObject(String.valueOf(1));
+                                data = new String[dataJsonObj.length()][countCol.length()];
 
                                 Log.d(TAG, "length: " + dataJsonObj.length());
                                 for (int i = 1; i <= dataJsonObj.length(); i++) {
@@ -133,11 +132,14 @@ public class TrainingPlan {
 
                                         data[i - 1][j] = tt;
 
+
                                         Log.d(TAG, "training_plan22: " + (i - 1) + "-" + j + ": " + tt);
 
 //
                                     }
                                 }
+
+                                stream_completed = true;
 
 
                             } catch (JSONException e) {
@@ -184,6 +186,10 @@ public class TrainingPlan {
 
                                     dataJsonObj = new JSONObject(resultJson);
 
+
+                                    JSONObject countCol = dataJsonObj.getJSONObject(String.valueOf(1));
+                                    data = new String[dataJsonObj.length()][countCol.length()];
+
                                     Log.d(TAG, "length: " + dataJsonObj.length());
                                     for (int i = 1; i <= dataJsonObj.length(); i++) {
 
@@ -201,6 +207,11 @@ public class TrainingPlan {
 //
                                         }
                                     }
+
+
+
+                                    stream_completed = true;
+
                                 } catch (JSONException e) {
                                     Log.d(FILE, "file: " + e.getMessage());
                                 }
@@ -212,6 +223,7 @@ public class TrainingPlan {
 
 
                         } else {
+                            stream_completed = true;
                             Log.d(INET, "Подключитесь к интернету");
 
                         }
@@ -222,14 +234,16 @@ public class TrainingPlan {
                     }
 
 
-
-            return null;
+                    stream_completed = true;
+                    return null;
         }
 
 
         @Override
         protected void onPostExecute(Void voids) {
             super.onPostExecute(voids);
+
+            Log.d(TAG, "onPostExecute: " + stream_completed);
         }
     }
 

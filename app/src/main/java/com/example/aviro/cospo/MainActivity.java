@@ -1,59 +1,27 @@
 package com.example.aviro.cospo;
 
-import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.StringBuilderPrinter;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.HorizontalScrollView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.ndk.CrashlyticsNdk;
 import com.mikepenz.iconics.typeface.FontAwesome;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import io.fabric.sdk.android.Fabric;
 
-import org.apache.poi.hssf.extractor.ExcelExtractor;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.w3c.dom.Text;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.sql.Connection;
-
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Iterator;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -66,13 +34,14 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        final Intent intent = new Intent(this, TrainingPlan1.class);
+//        final Intent intent = new Intent(this, TrainingPlan1.class);
         new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -110,7 +79,6 @@ public class MainActivity extends ActionBarActivity {
 
         // Тренировочный план
         training_plan.uploadPlan();
-
 
 
         Log.d(TAG, "plan123 " + training_plan.data[1][2]);

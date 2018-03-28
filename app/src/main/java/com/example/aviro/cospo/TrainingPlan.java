@@ -63,6 +63,7 @@ public class TrainingPlan {
                     // ПОТОМ ДОБАВИТЬ ПАРАМЕТРЫ С EMAIL, PASS,
                     String query = "http://cospo.esy.es/andr.php?andr=download_plan";
 
+
                     HttpURLConnection connection = null;
                     try {
                         connection = (HttpURLConnection) new URL(query).openConnection();
